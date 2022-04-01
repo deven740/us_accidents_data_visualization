@@ -3,6 +3,7 @@
 logs
 **/*.backup.*
 **/*.back.*
+__pycache__
 
 node_modules
 bower_components
