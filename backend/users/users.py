@@ -8,11 +8,17 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 
+from passlib.context import CryptContext
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 
 @router.get("/")
@@ -25,7 +31,7 @@ async def register_user(user: UserSchema ,db: Session = Depends(get_db)):
 
     user_model = UserModel()
     user_model.username = user.username
-    user_model.password = user.password
+    user_model.password = get_password_hash(user.password)
 
     db.add(user_model)
     db.commit()
