@@ -1,25 +1,30 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, Request, status, HTTPException
+from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+from fastapi_jwt_auth import AuthJWT
+from fastapi_jwt_auth.exceptions import AuthJWTException
+from fastapi.responses import JSONResponse
 
 from .models import UserModel
-
 from .schemas import UserSchema
-
-from sqlalchemy.orm import Session
-
 from database import get_db
 
-from passlib.context import CryptContext
 
 router = APIRouter(
     prefix="/users",
     tags=["users"]
 )
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 @router.get("/")
@@ -46,4 +51,30 @@ async def register_user(user: UserSchema, db: Session = Depends(get_db)):
         "transaction": "User Created Successfully"
     }
 
+
+@router.post('/login')
+def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    
+    user_exists = db.query(UserModel).filter(UserModel.username == user.username).first()
+    if not user_exists:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User Does not exist")
+
+    if verify_password(user.password, user_exists.password):
+        # subject identifier for who this token is for example id or username from database
+        access_token = Authorize.create_access_token(subject=user.username)
+        refresh_token = Authorize.create_refresh_token(subject=user.username)
+        return {"access_token": access_token, "refresh_token": refresh_token}
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password do not match")
+
+
+@router.get('/user')
+def user(Authorize: AuthJWT = Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        print(e)
+
+    current_user = Authorize.get_jwt_subject()
+    return {"user": current_user}
 
