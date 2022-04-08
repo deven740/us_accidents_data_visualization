@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+# from http.client import HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException
 
 from .models import UserModel
 
@@ -30,6 +31,10 @@ async def test(db: Session = Depends(get_db)):
 @router.post("/register")
 async def register_user(user: UserSchema ,db: Session = Depends(get_db)):
 
+    user_exists = db.query(UserModel).filter(UserModel.username == user.username).first()
+    if user_exists:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User Already Exists")
+
     user_model = UserModel()
     user_model.username = user.username
     user_model.password = get_password_hash(user.password)
@@ -39,6 +44,6 @@ async def register_user(user: UserSchema ,db: Session = Depends(get_db)):
 
     return {
         "status": 201,
-        "transaction": "Successful"
+        "transaction": "User Created Successfully"
     }
 
