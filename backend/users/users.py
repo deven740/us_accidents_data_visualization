@@ -28,7 +28,7 @@ async def test(db: Session = Depends(get_db)):
 
 
 @router.post("/register")
-async def register_user(user: UserSchema ,db: Session = Depends(get_db)):
+async def register_user(user: UserSchema, db: Session = Depends(get_db)):
 
     user_exists = db.query(UserModel).filter(UserModel.username == user.username).first()
     if user_exists:
