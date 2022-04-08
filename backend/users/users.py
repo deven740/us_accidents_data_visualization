@@ -1,4 +1,3 @@
-# from http.client import HTTPException
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from .models import UserModel
@@ -46,4 +45,5 @@ async def register_user(user: UserSchema ,db: Session = Depends(get_db)):
         "status": 201,
         "transaction": "User Created Successfully"
     }
+
 
