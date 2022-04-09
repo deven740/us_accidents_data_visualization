@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi_jwt_auth.exceptions import AuthJWTException
 
-
 from users import users, models as user_models
 from database import engine
 import auth
