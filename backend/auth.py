@@ -2,8 +2,9 @@ from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
-from fastapi import Depends, APIRouter
+from fastapi import APIRouter, Depends, Request, HTTPException
 
+from users import schemas
 
 router = APIRouter(
     prefix="/auth",
@@ -21,7 +22,7 @@ def get_config():
 
 
 
-# @app.post('/login')
+# @router.post('/login')
 # def login(user: schemas.UserSchema, Authorize: AuthJWT = Depends()):
 #     if user.username != "stringst" or user.password != "stringst":
 #         raise HTTPException(status_code=401,detail="Bad username or password")
@@ -64,9 +65,8 @@ def refresh(Authorize: AuthJWT = Depends()):
 #     return {"user": current_user}
 
 
-# @app.exception_handler(AuthJWTException)
-# def authjwt_exception_handler(request: Request, exc: AuthJWTException):
-#     return JSONResponse(
-#         status_code=exc.status_code,
-#         content={"detail": exc.message}
-#     )
+def authjwt_exception_handler(request: Request, exc: AuthJWTException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message}
+    )

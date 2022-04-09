@@ -69,11 +69,8 @@ def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = Depend
 
 
 @router.get('/user')
-def user(Authorize: AuthJWT = Depends()):
-    try:
-        Authorize.jwt_required()
-    except Exception as e:
-        print(e)
+async def user(Authorize: AuthJWT = Depends()):
+    Authorize.jwt_required()
 
     current_user = Authorize.get_jwt_subject()
     return {"user": current_user}

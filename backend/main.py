@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Request, Depends
-from typing import Optional
-from fastapi.security import OAuth2PasswordBearer
+from fastapi_jwt_auth.exceptions import AuthJWTException
 
-from users import users, schemas,  models as user_models
+
+from users import users, models as user_models
 from database import engine
 import auth
 
@@ -12,3 +12,5 @@ app = FastAPI()
 
 app.include_router(users.router)
 app.include_router(auth.router)
+
+app.add_exception_handler(AuthJWTException, auth.authjwt_exception_handler)
