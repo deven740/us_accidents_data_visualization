@@ -1,0 +1,6 @@
+fastapi==0.75.0
+uvicorn==0.17.6
+SQLAlchemy==1.4.32
+psycopg2==2.9.3
+passlib==1.7.4
+fastapi-jwt-auth==0.5.0
