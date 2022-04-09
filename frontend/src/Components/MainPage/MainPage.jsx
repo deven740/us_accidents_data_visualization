@@ -3,7 +3,7 @@ import "./MainPage.css";
 
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import Button from "@mui/material/Button";
+// import Button from "@mui/material/Button";
 
 function MainPage() {
   return (
