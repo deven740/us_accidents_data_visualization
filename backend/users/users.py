@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from fastapi.responses import JSONResponse
+from datetime import timedelta
 
 from .models import UserModel
 from .schemas import UserSchema
@@ -53,7 +54,7 @@ async def register_user(user: UserSchema, db: Session = Depends(get_db)):
 
 
 @router.post('/login')
-def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+async def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     
     user_exists = db.query(UserModel).filter(UserModel.username == user.username).first()
     if not user_exists:
@@ -61,8 +62,8 @@ def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = Depend
 
     if verify_password(user.password, user_exists.password):
         # subject identifier for who this token is for example id or username from database
-        access_token = Authorize.create_access_token(subject=user.username)
-        refresh_token = Authorize.create_refresh_token(subject=user.username)
+        access_token = Authorize.create_access_token(subject=user.username,  expires_time=timedelta(minutes=1))
+        refresh_token = Authorize.create_refresh_token(subject=user.username, expires_time=timedelta(days=30))
         return {"access_token": access_token, "refresh_token": refresh_token}
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password do not match")
@@ -75,3 +76,17 @@ async def user(Authorize: AuthJWT = Depends()):
     current_user = Authorize.get_jwt_subject()
     return {"user": current_user}
 
+
+@router.post('/refresh')
+async def refresh(Authorize: AuthJWT = Depends()):
+    """
+    The jwt_refresh_token_required() function insures a valid refresh
+    token is present in the request before running any code below that function.
+    we can use the get_jwt_subject() function to get the subject of the refresh
+    token, and use the create_access_token() function again to make a new access token
+    """
+    Authorize.jwt_refresh_token_required()
+
+    current_user = Authorize.get_jwt_subject()
+    new_access_token = Authorize.create_access_token(subject=current_user, expires_time=timedelta(minutes=1))
+    return {"access_token": new_access_token}
