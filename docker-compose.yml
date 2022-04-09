@@ -1,13 +1,39 @@
-version: '3.7'
+version: "3.8"
 
 services:
-  frontend:
+  # frontend:
+  #   build:
+  #     context: frontend/
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   volumes:
+  #     - ./frontend/:/home/node
+  #     - /home/node/node_modules
+  #   ports:
+  #     - 3000:3000
+
+  backend:
+    container_name: backend
     build:
-      context: frontend/
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+      context: backend
     volumes:
-      - ./frontend/:/home/node
-      - /home/node/node_modules
+      - ./backend/:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ports:
-      - 3000:3000
+      - 8000:8000
+    restart: always
+
+  db:
+    container_name: db
+    image: postgres
+    env_file:
+      - database.env
+    volumes:
+      - db:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    restart: always
+
+volumes:
+  db:
+    external: false
