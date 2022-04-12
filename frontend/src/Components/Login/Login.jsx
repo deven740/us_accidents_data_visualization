@@ -10,17 +10,19 @@ function Login() {
     password: "",
   });
 
+  const [accessToken, setAccessToken] = useState("");
+  const [refreshToken, setRefreshToken] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(inputs);
-    // const data = {
-    //   username: values.username,
+
     try {
       const res = await axios.post(
         `http://www.localhost:8000/users/login`,
         inputs
       );
-      console.log(res);
+      setAccessToken(res.data.access_token);
+      setRefreshToken(res.data.refresh_token);
     } catch (err) {
       console.log(err.response.data);
     }
