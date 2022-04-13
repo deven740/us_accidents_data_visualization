@@ -35,6 +35,11 @@ function Login() {
     });
   };
 
+  const fetchUsersData = async (e) => {
+    const res = await axios.get("http://localhost:8000/users/");
+    console.log(res.data);
+  };
+
   return (
     <div className="login">
       <div className="login-component">
@@ -54,6 +59,9 @@ function Login() {
           />
           <input type="submit" value="Submit" />
         </form>
+        <br />
+        <br />
+        <button onClick={fetchUsersData}>Fetch Data</button>
       </div>
     </div>
   );
