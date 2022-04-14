@@ -25,7 +25,7 @@ function Login() {
       setRefreshToken(res.data.refresh_token);
       toast.success("Logged in Sucessfully");
     } catch (err) {
-      console.log(err.response.data);
+      toast.error(err.response.data.detail);
     }
   };
 
