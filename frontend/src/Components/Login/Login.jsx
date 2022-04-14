@@ -10,9 +10,6 @@ function Login() {
     password: "",
   });
 
-  const [accessToken, setAccessToken] = useState("");
-  const [refreshToken, setRefreshToken] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -21,8 +18,8 @@ function Login() {
         `http://www.localhost:8000/users/login`,
         inputs
       );
-      setAccessToken(res.data.access_token);
-      setRefreshToken(res.data.refresh_token);
+      localStorage.setItem("access_token", res.data.access_token);
+      localStorage.setItem("refresh_token", res.data.refresh_token);
       toast.success("Logged in Sucessfully");
     } catch (err) {
       toast.error(err.response.data.detail);
@@ -40,38 +37,30 @@ function Login() {
     try {
       const res = await axios.get("http://localhost:8000/users/user", {
         headers: {
-          authorization: `Bearer ${accessToken}`,
+          authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       });
       console.log(res);
     } catch (err) {
       console.log(err.response);
-      if (err.response.status == 422) {
+      if (err.response.status === 422) {
         try {
           const res = await axios.post(
             "http://www.localhost:8000/users/refresh",
             {},
-            { headers: { Authorization: `Bearer ${refreshToken}` } }
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "refresh_token"
+                )}`,
+              },
+            }
           );
-          console.log(res.data);
-          setAccessToken(res.data.access_token);
+          localStorage.setItem("access_token", res.data.access_token);
         } catch (err) {
           console.log(err.response);
         }
       }
-    }
-  };
-
-  const getRefreshToken = async (e) => {
-    try {
-      const res = await axios.post("http://localhost:8000/users/refresh", {
-        headers: {
-          authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZXZlbjEyMzQ1IiwiaWF0IjoxNjQ5OTE5NDA4LCJuYmYiOjE2NDk5MTk0MDgsImp0aSI6ImZhODNhYWJmLTM1OWQtNDZhNC1iNmFlLTU1ODE2MTk4NzBjZiIsImV4cCI6MTY1MjUxMTQwOCwidHlwZSI6InJlZnJlc2gifQ.jLLPJfqSqWhISNoi-Zpm4OyJdUi5PWtNRIUb10X7fj0`,
-        },
-      });
-      console.log(res.data);
-    } catch (err) {
-      console.log(err.response);
     }
   };
 
@@ -97,9 +86,6 @@ function Login() {
         <br />
         <br />
         <button onClick={fetchUsersData}>Fetch Data</button>
-        <br />
-        <br />
-        <button onClick={getRefreshToken}>Get access token</button>
       </div>
     </div>
   );
