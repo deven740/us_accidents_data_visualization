@@ -39,7 +39,7 @@ async def register_user(user: UserSchema, db: Session = Depends(get_db)):
     if user_exists:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User Already Exists")
         
-    role = db.query(RoleModel).filter(RoleModel.role == "supervisor").one()
+    role = db.query(RoleModel).filter(RoleModel.role == "Supervisor").one()
 
     user_model = UserModel()
     user_model.username = user.username

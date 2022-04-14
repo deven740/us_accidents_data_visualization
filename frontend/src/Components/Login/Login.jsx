@@ -36,14 +36,48 @@ function Login() {
   };
 
   const fetchUsersData = async (e) => {
-    const res = await axios.get("http://localhost:8000/users/");
-    console.log(res.data);
+    try {
+      const res = await axios.get("http://localhost:8000/users/user", {
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log(res);
+    } catch (err) {
+      console.log(err.response);
+      if (err.response.status == 422) {
+        try {
+          const res = await axios.post(
+            "http://www.localhost:8000/users/refresh",
+            {},
+            { headers: { Authorization: `Bearer ${refreshToken}` } }
+          );
+          console.log(res.data);
+          setAccessToken(res.data.access_token);
+        } catch (err) {
+          console.log(err.response);
+        }
+      }
+    }
+  };
+
+  const getRefreshToken = async (e) => {
+    try {
+      const res = await axios.post("http://localhost:8000/users/refresh", {
+        headers: {
+          authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZXZlbjEyMzQ1IiwiaWF0IjoxNjQ5OTE5NDA4LCJuYmYiOjE2NDk5MTk0MDgsImp0aSI6ImZhODNhYWJmLTM1OWQtNDZhNC1iNmFlLTU1ODE2MTk4NzBjZiIsImV4cCI6MTY1MjUxMTQwOCwidHlwZSI6InJlZnJlc2gifQ.jLLPJfqSqWhISNoi-Zpm4OyJdUi5PWtNRIUb10X7fj0`,
+        },
+      });
+      console.log(res.data);
+    } catch (err) {
+      console.log(err.response);
+    }
   };
 
   return (
     <div className="login">
       <div className="login-component">
-        <h3>Login</h3>
+        <h3>Loginn</h3>
         <form action="post" className="login-form" onSubmit={handleSubmit}>
           <input
             type="text"
@@ -62,6 +96,9 @@ function Login() {
         <br />
         <br />
         <button onClick={fetchUsersData}>Fetch Data</button>
+        <br />
+        <br />
+        <button onClick={getRefreshToken}>Get access token</button>
       </div>
     </div>
   );
