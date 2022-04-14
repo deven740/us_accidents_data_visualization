@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { toast } from "react-toastify";
 
 import "./Login.css";
 
@@ -23,6 +23,7 @@ function Login() {
       );
       setAccessToken(res.data.access_token);
       setRefreshToken(res.data.refresh_token);
+      toast.success("Logged in Sucessfully");
     } catch (err) {
       console.log(err.response.data);
     }
