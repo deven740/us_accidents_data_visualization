@@ -39,7 +39,7 @@ async def register_user(user: UserSchema, db: Session = Depends(get_db)):
     if user_exists:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User Already Exists")
         
-    role = db.query(RoleModel).filter(RoleModel.role == "supervisor").one()
+    role = db.query(RoleModel).filter(RoleModel.role == "Supervisor").one()
 
     user_model = UserModel()
     user_model.username = user.username
@@ -57,18 +57,17 @@ async def register_user(user: UserSchema, db: Session = Depends(get_db)):
 
 @router.post('/login')
 async def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
-    
     user_exists = db.query(UserModel).filter(UserModel.username == user.username).first()
     if not user_exists:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User Does not exist")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Does not exist")
 
     if verify_password(user.password, user_exists.password):
         # subject identifier for who this token is for example id or username from database
-        access_token = Authorize.create_access_token(subject=user.username,  expires_time=timedelta(minutes=1))
+        access_token = Authorize.create_access_token(subject=user.username,  expires_time=timedelta(seconds=30))
         refresh_token = Authorize.create_refresh_token(subject=user.username, expires_time=timedelta(days=30))
         return {"access_token": access_token, "refresh_token": refresh_token}
     else:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password do not match")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Password do not match")
 
 
 @router.get('/user')

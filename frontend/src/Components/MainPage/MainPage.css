@@ -1,0 +1,40 @@
+.main-page {
+  background-color: hotpink;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile img {
+  height: 4.8rem;
+  width: 4.8rem;
+  border-radius: 50%;
+  width: 100%;
+}
+
+.navbar-right .username {
+  font-size: 1.6rem;
+}
+
+.notifications {
+  position: relative;
+}
+
+.email {
+  position: relative;
+}
+
+.notification-circle {
+  position: absolute;
+  top: -1rem;
+  right: -0.2rem;
+  background-color: green;
+  font-size: 1.6rem;
+  border-radius: 50%;
+  padding: 0.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

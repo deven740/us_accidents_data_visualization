@@ -14,6 +14,7 @@ def get_config():
 
 
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):
+    print(request.headers)
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.message}
