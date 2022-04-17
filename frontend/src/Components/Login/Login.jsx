@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosApiInstance from "../../AxiosInstancs.js";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 import "./Login.css";
 
@@ -35,32 +36,11 @@ function Login() {
 
   const fetchUsersData = async (e) => {
     try {
-      const res = await axios.get("http://localhost:8000/users/user", {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
-      console.log(res);
+      const res = await axiosApiInstance.get(
+        "http://localhost:8000/users/user"
+      );
     } catch (err) {
       console.log(err.response);
-      if (err.response.status === 422) {
-        try {
-          const res = await axios.post(
-            "http://www.localhost:8000/users/refresh",
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem(
-                  "refresh_token"
-                )}`,
-              },
-            }
-          );
-          localStorage.setItem("access_token", res.data.access_token);
-        } catch (err) {
-          console.log(err.response);
-        }
-      }
     }
   };
 

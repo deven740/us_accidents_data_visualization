@@ -63,7 +63,7 @@ async def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = 
 
     if verify_password(user.password, user_exists.password):
         # subject identifier for who this token is for example id or username from database
-        access_token = Authorize.create_access_token(subject=user.username,  expires_time=timedelta(minutes=1))
+        access_token = Authorize.create_access_token(subject=user.username,  expires_time=timedelta(seconds=30))
         refresh_token = Authorize.create_refresh_token(subject=user.username, expires_time=timedelta(days=30))
         return {"access_token": access_token, "refresh_token": refresh_token}
     else:
