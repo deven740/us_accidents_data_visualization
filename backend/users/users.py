@@ -65,7 +65,8 @@ async def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = 
         # subject identifier for who this token is for example id or username from database
         access_token = Authorize.create_access_token(subject=user.username,  expires_time=timedelta(seconds=30))
         refresh_token = Authorize.create_refresh_token(subject=user.username, expires_time=timedelta(days=30))
-        return {"access_token": access_token, "refresh_token": refresh_token}
+        return {"access_token": access_token, "refresh_token": refresh_token,
+                "user": {"username": user.username, "role": user_exists.role.role}}
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Password do not match")
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axiosApiInstance from "../../AxiosInstancs.js";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import "./Login.css";
 
@@ -11,6 +12,8 @@ function Login() {
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -19,9 +22,12 @@ function Login() {
         `http://www.localhost:8000/users/login`,
         inputs
       );
-      localStorage.setItem("access_token", res.data.access_token);
-      localStorage.setItem("refresh_token", res.data.refresh_token);
+      const { access_token, refresh_token, user } = res.data;
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
       toast.success("Logged in Sucessfully");
+
+      navigate(`/${user.role.toLowerCase()}`);
     } catch (err) {
       toast.error(err.response.data.detail);
     }
