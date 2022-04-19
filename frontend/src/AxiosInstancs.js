@@ -19,6 +19,7 @@ axiosApiInstance.interceptors.response.use(
     return response;
   },
   async (err) => {
+    const originalConfig = err.config;
     if (err.response.status === 422) {
       try {
         const res = await axios.post(
@@ -26,11 +27,15 @@ axiosApiInstance.interceptors.response.use(
           {},
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("refresh_token")}`,
+              authorization: `Bearer ${localStorage.getItem("refresh_token")}`,
             },
           }
         );
         localStorage.setItem("access_token", res.data.access_token);
+        originalConfig.headers.authorization = `Bearer ${localStorage.getItem(
+          "access_token"
+        )}`;
+        return axiosApiInstance(originalConfig);
       } catch (err) {
         console.log(err.response);
       }

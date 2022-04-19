@@ -11,7 +11,8 @@ class RoleModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     role = Column(String, unique=True, nullable=False)
-    user = relationship('UserModel')
+    user = relationship('UserModel', back_populates='role')
+
 
 
 class UserModel(Base):
@@ -21,3 +22,4 @@ class UserModel(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     role_id = Column(Integer, ForeignKey('roles.id'), nullable=False)
+    role = relationship('RoleModel', back_populates='user')

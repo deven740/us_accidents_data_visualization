@@ -39,6 +39,7 @@ function Login() {
       const res = await axiosApiInstance.get(
         "http://localhost:8000/users/user"
       );
+      console.log(res.data);
     } catch (err) {
       console.log(err.response);
     }

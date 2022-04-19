@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from datetime import timedelta
 
 from .models import UserModel, RoleModel
-from .schemas import UserSchema
+from .schemas import UserSchema, UserResponseModel
 from database import get_db
 
 
@@ -70,12 +70,20 @@ async def login(user: UserSchema, Authorize: AuthJWT = Depends(), db: Session = 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Password do not match")
 
 
-@router.get('/user')
-async def user(Authorize: AuthJWT = Depends()):
+@router.get('/user', response_model=UserResponseModel)
+async def user(Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     Authorize.jwt_required()
 
     current_user = Authorize.get_jwt_subject()
-    return {"user": current_user}
+    
+    user = db.query(UserModel).filter(UserModel.username == current_user).first()
+
+    response = {
+        'username': user.username,
+        'role': user.role.role
+    }
+
+    return response
 
 
 @router.post('/refresh')
